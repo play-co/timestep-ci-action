@@ -7,7 +7,9 @@ const releaseTpl = fs.readFileSync(
   path.resolve(__dirname, './templates/release.hbs')
 ).toString();
 
-const compiledTemplate = handlebars.compile(releaseTpl);
+const compiledTemplate = handlebars.compile(releaseTpl, {
+  noEscape: true
+});
 
 const renderBlocks = [
   'breaking changes',
