@@ -8,13 +8,13 @@
 #
 # You can specify a version:
 # FROM node:10-slim
-FROM node:slim
+FROM node:10
 
 # Labels for GitHub to read your action
-LABEL "com.github.actions.name"="Your action name"
-LABEL "com.github.actions.description"="A description of your action"
+LABEL "com.github.actions.name"="Timestep Release"
+LABEL "com.github.actions.description"="Publish a new version to NPM"
 # Here all of the available icons: https://feathericons.com/
-LABEL "com.github.actions.icon"="play"
+LABEL "com.github.actions.icon"="[package]"
 # And all of the available colors: https://developer.github.com/actions/creating-github-actions/creating-a-docker-container/#label
 LABEL "com.github.actions.color"="gray-dark"
 
