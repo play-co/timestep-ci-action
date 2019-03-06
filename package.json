@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BlackstormLabs/github-ci-release-action.git"
+    "url": "git+https://github.com/gameclosure/github-ci-release-action.git"
   },
   "author": "Ivan Reshetnikov",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BlackstormLabs/github-ci-release-action/issues"
+    "url": "https://github.com/gameclosure/github-ci-release-action/issues"
   },
-  "homepage": "https://github.com/BlackstormLabs/github-ci-release-action#readme",
+  "homepage": "https://github.com/gameclosure/github-ci-release-action#readme",
   "dependencies": {
     "@blackstormlabs/timestep-ci": "^0.1.2",
     "actions-toolkit": "^1.5.0",
