@@ -1,17 +1,17 @@
-const { Toolkit } = require('actions-toolkit');
+const yargs = require('yargs');
 
-const tools = new Toolkit({
-  event: ['pull_request']
-});
+// eslint-disable-next-line no-unused-expressions
+yargs
+  .usage('Usage: $0 <command> <operation>')
+  .showHelpOnFail(true)
+  .help('help', 'Show usage instructions.')
 
-tools.log('test log');
+  .command({
+    command: 'validate',
+    desc: 'Validate incoming pull request',
+    handler: require('./commands/validate')
+  })
 
-tools.log('action', tools.context.action);
-
-const PullRequestValidator = require('./PullRequestValidator');
-
-new PullRequestValidator(tools)
-  .go()
-  .then(result => {
-    tools.log.success('Validation result', result);
-  });
+  .demandCommand()
+  .strict()
+  .argv;

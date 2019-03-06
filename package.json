@@ -1,5 +1,5 @@
 {
-  "name": "github-ci-release-action",
+  "name": "timestep-ci-action",
   "version": "0.1.0",
   "description": "",
   "private": true,
@@ -9,19 +9,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BlackstormLabs/github-ci-release-action.git"
+    "url": "git+https://github.com/gameclosure/timestep-ci-action.git"
   },
   "author": "Ivan Reshetnikov",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BlackstormLabs/github-ci-release-action/issues"
+    "url": "https://github.com/gameclosure/timestep-ci-action/issues"
   },
-  "homepage": "https://github.com/BlackstormLabs/github-ci-release-action#readme",
+  "homepage": "https://github.com/gameclosure/timestep-ci-action#readme",
   "dependencies": {
     "@blackstormlabs/timestep-ci": "^0.1.2",
     "actions-toolkit": "^1.5.0",
     "execa": "^1.0.0",
-    "handlebars": "^4.1.0"
+    "yargs": "^13.2.2"
   },
   "devDependencies": {
     "eslint": "^5.15.0",
