@@ -1,11 +1,17 @@
 const { Toolkit } = require('actions-toolkit');
-const tools = new Toolkit();
 
-console.log(tools.arguments);
+const tools = new Toolkit({
+  event: ['pull_request']
+});
 
-// const IssueCreator = require('.')
-// const issueCreator = new IssueCreator(tools)
-// issueCreator.go()
-//   .then(issue => {
-//     tools.log.success(`Created issue ${issue.data.title}#${issue.data.number}: ${issue.data.html_url}`)
-//   })
+tools.log('test log');
+
+tools.log('action', tools.context.action);
+
+const PullRequestValidator = require('./PullRequestValidator');
+
+new PullRequestValidator(tools)
+  .go()
+  .then(result => {
+    tools.log.success('Validation result', result);
+  });
