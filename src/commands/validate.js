@@ -51,7 +51,7 @@ module.exports = async (yargs) => {
       ...tools.context.repo,
       sha: tools.context.sha,
       state: 'success',
-      context: tools.context.workflow,
+      context: tools.context.action,
       description: 'Format validation successful!'
     });
   } catch (error) {
