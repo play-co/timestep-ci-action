@@ -1,28 +1,31 @@
 const execa = require('execa');
 const { Toolkit } = require('actions-toolkit');
 
-const allowedActions = [
-  'opened', 'edited', 'reopened', 'synchronize'
-];
-
 const protectedBranches = (process.env.PROTECTED_BRANCHES || '')
   .split(',')
   .map(branch => branch.trim());
 
 module.exports = async (yargs) => {
   const tools = new Toolkit({
-    event: ['pull_request']
+    event: [
+      'pull_request.opened',
+      'pull_request.edited',
+      'pull_request.reopened',
+      'pull_request.synchronize'
+    ]
   });
 
-  const action = tools.context.payload.action;
-
-  tools.log('payload action', action);
-
-  if (!allowedActions.includes(action)) {
-    tools.log('skipping unsupported action: ' + action);
-
-    process.exit(0);
+  async function createStatus (state, description) {
+    return tools.github.repos.createStatus({
+      ...tools.context.repo,
+      sha: tools.context.sha,
+      state,
+      description,
+      context: process.env.STATUS_CONTEXT
+    });
   }
+
+  await createStatus('pending');
 
   const headRef = tools.context.payload.pull_request.head.ref;
   const baseBranch = tools.context.payload.pull_request.base.ref;
@@ -32,10 +35,10 @@ module.exports = async (yargs) => {
 
   if (protectedBranches.length &&
       !protectedBranches.includes(baseBranch)) {
-    tools.log('protected branches', protectedBranches);
-    tools.log('skipping validation for unprotected branch');
+    await createStatus('success', 'Validation skipped');
 
-    process.exit(0);
+    tools.log('protected branches', protectedBranches);
+    tools.exit.neutral('skipping validation for unprotected branch');
   }
 
   const subprocess = execa('npx', [
@@ -49,14 +52,13 @@ module.exports = async (yargs) => {
 
   try {
     await subprocess;
+    await createStatus('success', 'Validation successful');
 
-    tools.log('pull request validation successful!');
-
-    process.exit(0);
+    tools.exit.success('validation successful');
   } catch (error) {
-    tools.log('pull request validation error!');
-    tools.log('tsci exited with code ' + error.exitCode + ': ' + error.message);
+    await createStatus('failure', 'Invalid pull request format');
 
-    process.exit(1);
+    tools.log.fatal(error);
+    tools.exit.failure('validation failed');
   }
 };
