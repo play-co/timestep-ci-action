@@ -39,18 +39,27 @@ module.exports = async (yargs) => {
 
   try {
     await subprocess;
-
-    await tools.github.repos.createStatus({
-      ...tools.context.repo,
-      sha: tools.context.sha,
-      state: 'success'
-    });
-
-    tools.exit.success('pull request validation successful!');
   } catch (error) {
     tools.log('tsci exited with code ' + error.exitCode + ': ' + error.message);
     tools.log.fatal(error);
 
     tools.exit.failure('pull request validation error!');
   }
+
+  try {
+    await tools.github.repos.createStatus({
+      ...tools.context.repo,
+      sha: tools.context.sha,
+      state: 'success',
+      context: tools.context.workflow,
+      description: 'Format validation successful!'
+    });
+  } catch (error) {
+    tools.log('failed to create commit status');
+    tools.log.fatal(error);
+
+    tools.exit.failure('pull request validation error!');
+  }
+
+  tools.exit.success('pull request validation successful!');
 };
