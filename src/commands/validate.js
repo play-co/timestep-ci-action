@@ -51,7 +51,7 @@ module.exports = async (yargs) => {
       ...tools.context.repo,
       sha: tools.context.sha,
       state: 'success',
-      context: tools.context.action,
+      context: 'Timestep CI Action',
       description: 'Format validation successful!'
     });
   } catch (error) {
