@@ -30,9 +30,6 @@ module.exports = async (yargs) => {
   tools.log('head ref', headRef);
   tools.log('base ref', baseBranch);
 
-  tools.log('protected branches', protectedBranches, protectedBranches.length,
-    !protectedBranches.includes(baseBranch));
-
   if (protectedBranches.length &&
       !protectedBranches.includes(baseBranch)) {
     tools.log('protected branches', protectedBranches);
