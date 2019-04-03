@@ -40,6 +40,12 @@ module.exports = async (yargs) => {
   try {
     await subprocess;
 
+    await tools.github.repos.createStatus({
+      ...tools.context.repo,
+      sha: tools.context.sha,
+      state: 'success'
+    });
+
     tools.exit.success('pull request validation successful!');
   } catch (error) {
     tools.log('tsci exited with code ' + error.exitCode + ': ' + error.message);
