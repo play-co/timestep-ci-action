@@ -46,20 +46,5 @@ module.exports = async (yargs) => {
     tools.exit.failure('pull request validation error!');
   }
 
-  try {
-    await tools.github.repos.createStatus({
-      ...tools.context.repo,
-      sha: tools.context.sha,
-      state: 'success',
-      context: 'Timestep CI Action',
-      description: 'Format validation successful!'
-    });
-  } catch (error) {
-    tools.log('failed to create commit status');
-    tools.log.fatal(error);
-
-    tools.exit.failure('pull request validation error!');
-  }
-
   tools.exit.success('pull request validation successful!');
 };
