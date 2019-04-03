@@ -15,6 +15,18 @@ module.exports = async (yargs) => {
     ]
   });
 
+  async function createStatus (state, description) {
+    return tools.github.repos.createStatus({
+      ...tools.context.repo,
+      sha: tools.context.sha,
+      state,
+      description,
+      context: process.env.STATUS_CONTEXT
+    });
+  }
+
+  await createStatus('pending');
+
   const headRef = tools.context.payload.pull_request.head.ref;
   const baseBranch = tools.context.payload.pull_request.base.ref;
 
@@ -23,8 +35,9 @@ module.exports = async (yargs) => {
 
   if (protectedBranches.length &&
       !protectedBranches.includes(baseBranch)) {
-    tools.log('protected branches', protectedBranches);
+    await createStatus('success', 'Validation skipped');
 
+    tools.log('protected branches', protectedBranches);
     tools.exit.neutral('skipping validation for unprotected branch');
   }
 
@@ -39,27 +52,13 @@ module.exports = async (yargs) => {
 
   try {
     await subprocess;
+    await createStatus('success', 'Validation successful');
+
+    tools.exit.success('validation successful');
   } catch (error) {
-    tools.log('tsci exited with code ' + error.exitCode + ': ' + error.message);
+    await createStatus('failure', 'Invalid pull request format');
+
     tools.log.fatal(error);
-
-    tools.exit.failure('pull request validation error!');
+    tools.exit.failure('validation failed');
   }
-
-  try {
-    await tools.github.repos.createStatus({
-      ...tools.context.repo,
-      sha: tools.context.sha,
-      state: 'success',
-      context: tools.context.action,
-      description: 'Format validation successful!'
-    });
-  } catch (error) {
-    tools.log('failed to create commit status');
-    tools.log.fatal(error);
-
-    tools.exit.failure('pull request validation error!');
-  }
-
-  tools.exit.success('pull request validation successful!');
 };
