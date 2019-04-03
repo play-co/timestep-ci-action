@@ -1,28 +1,19 @@
 const execa = require('execa');
 const { Toolkit } = require('actions-toolkit');
 
-const allowedActions = [
-  'opened', 'edited', 'reopened', 'synchronize'
-];
-
 const protectedBranches = (process.env.PROTECTED_BRANCHES || '')
   .split(',')
   .map(branch => branch.trim());
 
 module.exports = async (yargs) => {
   const tools = new Toolkit({
-    event: ['pull_request']
+    event: [
+      'pull_request.opened',
+      'pull_request.edited',
+      'pull_request.reopened',
+      'pull_request.synchronize'
+    ]
   });
-
-  const action = tools.context.payload.action;
-
-  tools.log('payload action', action);
-
-  if (!allowedActions.includes(action)) {
-    tools.log('skipping unsupported action: ' + action);
-
-    process.exit(0);
-  }
 
   const headRef = tools.context.payload.pull_request.head.ref;
   const baseBranch = tools.context.payload.pull_request.base.ref;
@@ -33,9 +24,8 @@ module.exports = async (yargs) => {
   if (protectedBranches.length &&
       !protectedBranches.includes(baseBranch)) {
     tools.log('protected branches', protectedBranches);
-    tools.log('skipping validation for unprotected branch');
 
-    process.exit(0);
+    tools.exit.neutral('skipping validation for unprotected branch');
   }
 
   const subprocess = execa('npx', [
@@ -50,13 +40,11 @@ module.exports = async (yargs) => {
   try {
     await subprocess;
 
-    tools.log('pull request validation successful!');
-
-    process.exit(0);
+    tools.exit.success('pull request validation successful!');
   } catch (error) {
-    tools.log('pull request validation error!');
     tools.log('tsci exited with code ' + error.exitCode + ': ' + error.message);
+    tools.log.fatal(error);
 
-    process.exit(1);
+    tools.exit.failure('pull request validation error!');
   }
 };
