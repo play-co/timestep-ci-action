@@ -3,7 +3,8 @@ const path = require('path');
 const fs = require('fs-extra');
 
 const publishBranch = process.env.PUBLISH_BRANCH || 'master';
-const npmRcTemplate = '//registry.npmjs.org/:_authToken=${NPM_TOKEN}';
+const npmRcTemplate = '//registry.npmjs.org/:_authToken=${NPM_TOKEN}\n' +
+  'unsafe-perm = true';
 
 module.exports = async (tools) => {
   function runCommand (cmd, args) {
