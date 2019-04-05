@@ -1,3 +1,5 @@
+const execa = require('execa');
+
 const publishBranch = process.env.PUBLISH_BRANCH || 'master';
 
 module.exports = async (tools) => {
@@ -15,7 +17,10 @@ module.exports = async (tools) => {
   await tools.runInWorkspace('git', ['pull']);
 
   try {
-    const subprocess = tools.runInWorkspace('npm', ['run', 'release']);
+    const subprocess = execa('npm', ['run', 'release'], {
+      cwd: tools.workspace
+    });
+
     subprocess.stdout.pipe(process.stdout);
 
     await subprocess;
