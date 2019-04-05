@@ -3,6 +3,12 @@ const execa = require('execa');
 const publishBranch = process.env.PUBLISH_BRANCH || 'master';
 
 module.exports = async (tools) => {
+  function runCommand (cmd, args) {
+    const subprocess = execa(cmd, args, { cwd: tools.workspace });
+    subprocess.stdout.pipe(process.stdout);
+    return subprocess;
+  }
+
   const headBranch = tools.context.payload.pull_request.head.ref;
   const baseBranch = tools.context.payload.pull_request.base.ref;
 
@@ -13,17 +19,11 @@ module.exports = async (tools) => {
     tools.exit.neutral('no action required for branch ' + baseBranch);
   }
 
-  await tools.runInWorkspace('git', ['checkout', publishBranch]);
-  await tools.runInWorkspace('git', ['pull']);
-
   try {
-    const subprocess = execa('npm', ['run', 'release'], {
-      cwd: tools.workspace
-    });
-
-    subprocess.stdout.pipe(process.stdout);
-
-    await subprocess;
+    await runCommand('git', ['checkout', publishBranch]);
+    await runCommand('git', ['pull']);
+    await runCommand('npm', ['ci']);
+    await runCommand('npm', ['run', 'release']);
 
     tools.exit.success('new version published successfully');
   } catch (error) {
