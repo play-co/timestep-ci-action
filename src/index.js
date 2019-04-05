@@ -1,17 +1,20 @@
-const yargs = require('yargs');
+const { Toolkit } = require('actions-toolkit');
 
-// eslint-disable-next-line no-unused-expressions
-yargs
-  .usage('Usage: $0 <command> <operation>')
-  .showHelpOnFail(true)
-  .help('help', 'Show usage instructions.')
+const tools = new Toolkit({
+  event: 'pull_request'
+});
 
-  .command({
-    command: 'validate',
-    desc: 'Validate incoming pull request',
-    handler: require('./commands/validate')
-  })
+const payload = tools.context.payload;
 
-  .demandCommand()
-  .strict()
-  .argv;
+if (['opened', 'edited', 'reopened', 'synchronize'].includes(payload.action)) {
+  // Dispatch 'validate' action
+  require('./commands/validate')(tools);
+} else if (payload.action === 'closed' && payload.pull_request.merged) {
+  // Dispatch 'publish' action
+  require('./commands/publish')(tools);
+} else {
+  tools.log('action: ' + payload.action);
+  tools.log('pull_request.merged: ' + payload.pull_request.merged);
+
+  tools.exit.neutral('no action needed');
+}

@@ -1,20 +1,10 @@
 const execa = require('execa');
-const { Toolkit } = require('actions-toolkit');
 
 const protectedBranches = (process.env.PROTECTED_BRANCHES || '')
   .split(',')
   .map(branch => branch.trim());
 
-module.exports = async (yargs) => {
-  const tools = new Toolkit({
-    event: [
-      'pull_request.opened',
-      'pull_request.edited',
-      'pull_request.reopened',
-      'pull_request.synchronize'
-    ]
-  });
-
+module.exports = async (tools) => {
   async function createStatus (state, description) {
     return tools.github.repos.createStatus({
       ...tools.context.repo,
@@ -27,11 +17,11 @@ module.exports = async (yargs) => {
 
   await createStatus('pending');
 
-  const headRef = tools.context.payload.pull_request.head.ref;
+  const headBranch = tools.context.payload.pull_request.head.ref;
   const baseBranch = tools.context.payload.pull_request.base.ref;
 
-  tools.log('head ref', headRef);
-  tools.log('base ref', baseBranch);
+  tools.log('head branch', headBranch);
+  tools.log('base branch', baseBranch);
 
   if (protectedBranches.length &&
       !protectedBranches.includes(baseBranch)) {
