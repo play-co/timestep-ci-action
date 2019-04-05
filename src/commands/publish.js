@@ -1,6 +1,9 @@
 const execa = require('execa');
+const path = require('path');
+const fs = require('fs-extra');
 
 const publishBranch = process.env.PUBLISH_BRANCH || 'master';
+const npmRcData = '//registry.npmjs.org/:_authToken=${NPM_TOKEN}';
 
 module.exports = async (tools) => {
   function runCommand (cmd, args) {
@@ -20,9 +23,13 @@ module.exports = async (tools) => {
   }
 
   try {
+    const npmRcPath = path.join(tools.workspace, '.npmrc');
+
     await runCommand('git', ['checkout', publishBranch]);
     await runCommand('git', ['pull']);
+    await fs.writeFile(npmRcPath, npmRcData);
     await runCommand('npm', ['ci']);
+    await fs.remove(npmRcPath);
     await runCommand('npm', ['run', 'release']);
 
     tools.exit.success('new version published successfully');
