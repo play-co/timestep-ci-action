@@ -6,6 +6,14 @@ const protectedBranches = (process.env.PROTECTED_BRANCHES || '')
 
 module.exports = async (tools) => {
   async function createStatus (state, description) {
+    tools.log('creating status', {
+      ...tools.context.repo,
+      sha: tools.context.sha,
+      state,
+      description,
+      context: process.env.STATUS_CONTEXT
+    });
+
     return tools.github.repos.createStatus({
       ...tools.context.repo,
       sha: tools.context.sha,
