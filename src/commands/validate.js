@@ -5,6 +5,12 @@ const protectedBranches = (process.env.PROTECTED_BRANCHES || '')
   .map(branch => branch.trim());
 
 module.exports = async (tools) => {
+  // `GITHUB_SHA` points to the last merge commit on the `GITHUB_REF` branch.
+  // We need to get its parent commit's SHA.
+  const { parentSha } = await execa('git', [
+    'log', '--pretty=%P', '-1', tools.context.sha
+  ]);
+
   async function createStatus (state, description) {
     tools.log('creating status', {
       ...tools.context.repo,
@@ -16,7 +22,7 @@ module.exports = async (tools) => {
 
     const response = await tools.github.repos.createStatus({
       ...tools.context.repo,
-      sha: tools.context.sha,
+      sha: parentSha,
       state,
       description,
       context: process.env.STATUS_CONTEXT
