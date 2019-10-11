@@ -14,13 +14,15 @@ module.exports = async (tools) => {
       context: process.env.STATUS_CONTEXT
     });
 
-    return tools.github.repos.createStatus({
+    const response = await tools.github.repos.createStatus({
       ...tools.context.repo,
       sha: tools.context.sha,
       state,
       description,
       context: process.env.STATUS_CONTEXT
     });
+
+    tools.log('createStatus response', response);
   }
 
   await createStatus('pending');
