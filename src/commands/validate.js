@@ -11,18 +11,17 @@ module.exports = async (tools) => {
     'log', '--pretty=%P', '-1', tools.context.sha
   ], { cwd: tools.workspace });
 
+  // Since merge commits have multiple parents, we extract the one we need.
   const refParentSha = parentCommits.split(' ')[1];
 
-  async function createStatus (state, description) {
-    const response = await tools.github.repos.createStatus({
+  function createStatus (state, description) {
+    return tools.github.repos.createStatus({
       ...tools.context.repo,
       sha: refParentSha,
       state,
       description,
       context: process.env.STATUS_CONTEXT
     });
-
-    tools.log('createStatus response', response);
   }
 
   await createStatus('pending');
