@@ -9,7 +9,7 @@ module.exports = async (tools) => {
   // We need to get its parent commit's SHA.
   const { parentSha } = await execa('git', [
     'log', '--pretty=%P', '-1', tools.context.sha
-  ]);
+  ], { cwd: tools.workspace });
 
   async function createStatus (state, description) {
     tools.log('creating status', {
