@@ -28,6 +28,6 @@ async function run () {
 run()
   .then(() => tools.exit.success())
   .catch(err => {
-    tools.log(err);
+    tools.log.fatal(err);
     tools.exit.failure(err.message);
   });

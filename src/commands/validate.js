@@ -24,13 +24,14 @@ module.exports = async (tools) => {
     });
   }
 
-  await createStatus('pending');
-
   const headBranch = tools.context.payload.pull_request.head.ref;
   const baseBranch = tools.context.payload.pull_request.base.ref;
 
   tools.log('head branch', headBranch);
   tools.log('base branch', baseBranch);
+  tools.log('parent commits', parentCommits);
+
+  await createStatus('pending');
 
   if (protectedBranches.length &&
       !protectedBranches.includes(baseBranch)) {
