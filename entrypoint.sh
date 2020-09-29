@@ -5,6 +5,8 @@ set -e
 cd /
 
 # install action depenencies
+echo "running ci"
+echo $NODE_AUTH_TOKEN
 npm ci
 
 # run action passing it the arguments
