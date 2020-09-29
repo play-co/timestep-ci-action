@@ -5,8 +5,9 @@ set -e
 cd /
 
 # install action depenencies
-echo "running ci"
-echo $NODE_AUTH_TOKEN
+echo "@play-co:registry=https://npm.pkg.github.com/" > ~/.npmrc
+echo "//npm.pkg.github.com/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+
 npm ci
 
 # run action passing it the arguments
