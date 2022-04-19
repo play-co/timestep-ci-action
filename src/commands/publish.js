@@ -5,7 +5,7 @@ const fs = require('fs-extra');
 const publishBranch = process.env.PUBLISH_BRANCH || 'master';
 const npmRcTemplate = [
   '@play-co:registry="https://npm.pkg.github.com/"',
-  '//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}',
+  '//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}',
   'unsafe-perm = true'
 ].join("\n");
 
