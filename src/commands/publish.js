@@ -3,11 +3,14 @@ const path = require('path');
 const fs = require('fs-extra');
 
 const publishBranch = process.env.PUBLISH_BRANCH || 'master';
-const npmRcTemplate = '//registry.npmjs.org/:_authToken=${NPM_TOKEN}\n' +
-  'unsafe-perm = true';
+const npmRcTemplate = [
+  '@play-co:registry="https://npm.pkg.github.com/"',
+  '//npm.pkg.github.com/:_authToken=${NPM_TOKEN}',
+  'unsafe-perm = true'
+].join("\n");
 
 module.exports = async (tools) => {
-  function runCommand (cmd, args) {
+  function runCommand(cmd, args) {
     const subprocess = execa(cmd, args, { cwd: tools.workspace });
     subprocess.stdout.pipe(process.stdout);
     return subprocess;
